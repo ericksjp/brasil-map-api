@@ -1,8 +1,14 @@
 import express from "express";
 import estadoRoute from "./routes/estadoRoute.js";
+import { fileURLToPath } from "url";
+import { join, dirname } from "path";
+
+const __dirname = dirname(dirname(fileURLToPath(import.meta.url)));
+const PORT = process.env.PORT || 3000;
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+app.use("/static", express.static(join(__dirname, "public")));
 
 app.use("/api/estado", estadoRoute);
 
