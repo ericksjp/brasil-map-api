@@ -1,7 +1,11 @@
 const cboxEstado = document.querySelector("#comboboxEstado");
 const cboxMunicipio = document.querySelector("#comboboxMunicipio");
+const svgTag = document.querySelector("#svg");
 
 const estados = new Map();
+
+let currentEstado = null;
+let currentId = null;
 
 const estadosSiglas = [
   "AC",
@@ -111,6 +115,7 @@ async function loadEstadosData(ufs, estadoMap, cboxEstado, cboxMunicipio) {
 
   await loadBlockFullEstado(first, estadoMap, cboxEstado);
   populateCombobox(estadoMap.get(first).municipios, cboxMunicipio);
+  cboxEstado.dispatchEvent(new Event("change"));
 
   for (const uf of others) {
     await fetchAndSetEstadoInMapObject(uf, estadoMap);
@@ -131,8 +136,66 @@ async function loadEstadosData(ufs, estadoMap, cboxEstado, cboxMunicipio) {
   await loadEstadosData(estadosSiglas, estados, cboxEstado, cboxMunicipio);
 })();
 
+function createStatePath(svg, id) {
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.id = id;
+  path.setAttribute("d", svg);
+  path.setAttribute("stroke", "black");
+  path.setAttribute("fill", "green");
+  path.setAttribute("stroke-width", "0.01");
+
+  return path;
+}
+
+function drawState(viewbox, municipios) {
+  svgTag.replaceChildren();
+  svgTag.setAttribute("viewBox", viewbox);
+  const fragment = document.createDocumentFragment();
+  municipios.forEach((obj) => {
+    const path = createStatePath(obj[1].svg, obj[0]);
+    fragment.appendChild(path);
+  });
+  svgTag.appendChild(fragment);
+}
+
+function changeMunicipioComboValue(id) {
+  cboxMunicipio.value = id;
+}
+
+function changeCity(currentId, prevId) {
+  if (currentId != prevId) {
+    changeMunicipioComboValue(currentId);
+    if (currentId) {
+      const el = document.getElementById(currentId);
+      el && el.setAttribute("fill", "blue");
+    }
+    if (prevId) {
+      const prev = document.getElementById(prevId);
+      prev && prev.setAttribute("fill", "green");
+    }
+    return currentId;
+  }
+  return prevId;
+}
+
+cboxMunicipio.addEventListener("change", (e) => {
+  const id = e.target.value;
+  currentId = changeCity(id, currentId);
+});
+
 cboxEstado.addEventListener("change", (e) => {
   const uf = e.target.value;
-  let municipios = estados.get(uf).municipios;
+  let { municipios, viewbox } = estados.get(uf);
+
   populateCombobox(municipios, cboxMunicipio);
+  drawState(viewbox, municipios.entries());
+
+  currentId = changeCity(municipios.keys().next().value, null);
+});
+
+svgTag.addEventListener("mousemove", (e) => {
+  const { target } = e;
+  if (target.tagName === "path" && target.id) {
+    currentId = changeCity(target.id, currentId);
+  }
 });
