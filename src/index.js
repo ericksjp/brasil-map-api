@@ -1,12 +1,13 @@
 import express from "express";
-import pool from "./config/dbconfig.js";
+import estadoRoute from "./routes/estadoRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/", async (req, res) => {
-  const resp = await pool.query("SELECT 'Hello World' AS message");
-  res.json(resp.rows[0]);
+app.use("/api/estado", estadoRoute);
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Endpoint not found" });
 });
 
 app.listen(PORT, () => {
