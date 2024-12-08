@@ -13,7 +13,7 @@ export async function getEstadoByUf(uf) {
 }
 
 export async function getMunicipiosByUf(uf) {
-  const query = "SELECT nome, estado, area_km2, st_assvg(geom) as svg FROM municipio where estado ilike $1";
+  const query = "SELECT id, nome, estado, area_km2, st_assvg(geom) as svg FROM municipio where estado ilike $1";
   const { rows } = await pool.query(query, [uf]);
   return rows;
 }
