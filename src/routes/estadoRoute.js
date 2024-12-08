@@ -7,10 +7,10 @@ import {
 
 const router = Router();
 
-router.get("/", getEstado);
+router.get("/", getAllEstados);
 
-router.get("/:ufEstado", getAllEstados);
+router.get("/:uf", getEstado);
 
-router.get("/:ufEstado/municipios", getMunicipiosOfEstado);
+router.get("/:uf/municipios", getMunicipiosOfEstado);
 
 export default router;
