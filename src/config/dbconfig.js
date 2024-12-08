@@ -21,4 +21,27 @@ pool.on("error", (err) => {
   process.exit(-1);
 });
 
+// Making sure the getViewboxEstado function is created
+(async function () {
+  try {
+    await pool.query(
+      `CREATE FUNCTION getViewboxEstado(TEXT) RETURNS TEXT AS $$
+     DECLARE
+        nome1 ALIAS FOR $1;
+        viewBox TEXT;
+     BEGIN
+     SELECT INTO viewBox CAST(ST_xmin(ST_Envelope(geom)) as varchar) || ' ' ||
+             CAST(ST_ymax(ST_Envelope(geom)) * -1 as varchar) || ' ' ||
+             CAST(ST_xmax(ST_Envelope(geom)) - ST_xmin(ST_Envelope(geom)) as varchar) || ' ' ||
+             CAST(ST_ymax(ST_Envelope(geom)) - ST_ymin(ST_Envelope(geom)) as varchar)
+             FROM estado
+             WHERE nome ilike nome1;
+         return viewBox;
+     END;$$ LANGUAGE plpgsql;`,
+    );
+  } catch (err) {
+    if (err.code !== "42723") throw err;
+  }
+})();
+
 export default pool;

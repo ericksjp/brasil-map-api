@@ -1,13 +1,13 @@
 import pool from "../config/dbconfig.js";
 
 export async function getEstados() {
-  const query = "SELECT nome, sigla, regiao, area_km2, getViewbox(nome) as viewbox, st_assvg(geom) as svg FROM estado";
+  const query = "SELECT nome, sigla, regiao, area_km2, getViewboxEstado(nome) as viewbox, st_assvg(geom) as svg FROM estado";
   const { rows } = await pool.query(query);
   return rows;
 }
 
 export async function getEstadoByUf(uf) {
-  const query = "SELECT nome, sigla, regiao, area_km2, getViewbox(nome) as viewbox, st_assvg(geom) as svg FROM estado where uf ilike $1";
+  const query = "SELECT nome, sigla, regiao, area_km2, getViewboxEstado(nome) as viewbox, st_assvg(geom) as svg FROM estado where uf ilike $1";
   const { rows } = await pool.query(query, [uf]);
   return rows[0];
 }
