@@ -1,19 +1,16 @@
 import { Router } from "express";
+import {
+  getEstado,
+  getAllEstados,
+  getMunicipiosOfEstado,
+} from "../controllers/estadoController.js";
 
 const router = Router();
 
-router.get("/", (_, res) => {
-  res.send("Hello World");
-});
+router.get("/", getEstado);
 
-router.get("/:ufEstado", (req, res) => {
-  const { ufEstado } = req.params;
-  res.send(`Estado: ${ufEstado}`);
-});
+router.get("/:ufEstado", getAllEstados);
 
-router.get("/:ufEstado/municipios", (req, res) => {
-  const { ufEstado } = req.params;
-  res.send(`Municipios do estado: ${ufEstado}`);
-});
+router.get("/:ufEstado/municipios", getMunicipiosOfEstado);
 
 export default router;

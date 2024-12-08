@@ -1,4 +1,4 @@
-import * as se from "../services/estadoService";
+import * as se from "../services/estadoService.js";
 
 export async function getAllEstados(_, res) {
   try {
